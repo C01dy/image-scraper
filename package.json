@@ -1,0 +1,7 @@
+{
+  "name": "image-scraper",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "bun app/index.js"
+  }
+}

@@ -1,0 +1,6 @@
+services:
+  image-downloader:
+    build: .
+    container_name: image-downloader-app
+    volumes:
+      - ./webcam_archive:/app/images

@@ -2,5 +2,11 @@ services:
   image-downloader:
     build: .
     container_name: image-downloader-app
+    environment:
+      # Переменные окружения для конфигурации
+      - IMAGE_URL=${IMAGE_URL:-http://apollo.sai.msu.ru/webcam.jpg}
+      - OUTPUT_DIR=/app/images
     volumes:
       - ./webcam_archive:/app/images
+    # Если нужно передать аргументы напрямую, раскомментируйте:
+    # command: ["bun", "app/index.js", "--url", "http://example.com/cam.jpg", "--output", "/app/images"]

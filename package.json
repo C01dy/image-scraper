@@ -1,7 +1,13 @@
 {
   "name": "image-scraper",
   "version": "1.0.0",
+  "description": "Утилита для автоматического сохранения изображений с веб-камер",
   "scripts": {
-    "start": "bun app/index.js"
-  }
+    "start": "bun app/index.js",
+    "help": "bun app/index.js --help",
+    "download": "bun app/index.js"
+  },
+  "keywords": ["image", "scraper", "webcam", "downloader"],
+  "author": "",
+  "license": "MIT"
 }

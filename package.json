@@ -5,7 +5,11 @@
   "scripts": {
     "start": "bun app/index.js",
     "help": "bun app/index.js --help",
-    "download": "bun app/index.js"
+    "download": "bun app/index.js",
+    "admin": "bun admin/server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
   },
   "keywords": ["image", "scraper", "webcam", "downloader"],
   "author": "",

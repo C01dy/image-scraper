@@ -1,0 +1,28 @@
+{
+  "sources": [
+    {
+      "id": "msu-webcam",
+      "name": "МГУ Веб-камера",
+      "url": "http://apollo.sai.msu.ru/webcam.jpg",
+      "outputDir": "./webcam_archive",
+      "intervalMinutes": 60,
+      "enabled": true
+    },
+    {
+      "id": "webcam5",
+      "name": "webcam5",
+      "url": "https://gw.cmo.sai.msu.ru/webcam5.jpg",
+      "outputDir": "./images/my-cam",
+      "intervalMinutes": 1,
+      "enabled": true
+    },
+    {
+      "id": "webcam1",
+      "name": "webcam1",
+      "url": "http://apollo.sai.msu.ru/webcam.jpg",
+      "outputDir": "./images/my-cam1",
+      "intervalMinutes": 1,
+      "enabled": true
+    }
+  ]
+}

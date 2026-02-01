@@ -1,0 +1,39 @@
+services:
+  admin:
+    build:
+      context: .
+      dockerfile: Dockerfile.admin
+    container_name: photo-saver-admin
+    environment:
+      - ADMIN_PORT=3000
+      - ADMIN_USER=${ADMIN_USER:-admin}
+      - ADMIN_PASS=${ADMIN_PASS:-changeme}
+    volumes:
+      - ./config:/app/config
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./images:/app/images
+      - ./webcam_archive:/app/webcam_archive
+    restart: unless-stopped
+    networks:
+      - photo-saver-net
+
+  nginx:
+    image: nginx:alpine
+    container_name: photo-saver-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # Для SSL (раскомментируй):
+      # - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - admin
+    restart: unless-stopped
+    networks:
+      - photo-saver-net
+
+networks:
+  photo-saver-net:
+    driver: bridge

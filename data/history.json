@@ -1,0 +1,26 @@
+{
+  "webcam5": [
+    {
+      "timestamp": "2026-02-01T19:25:08.962Z",
+      "status": "success",
+      "fileName": "webcam5-2026-02-01_22-25-09.jpg",
+      "size": 141776
+    }
+  ],
+  "webcam1": [
+    {
+      "timestamp": "2026-02-01T19:25:08.962Z",
+      "status": "success",
+      "fileName": "webcam1-2026-02-01_22-25-11.jpg",
+      "size": 197270
+    }
+  ],
+  "msu-webcam": [
+    {
+      "timestamp": "2026-02-01T19:25:08.962Z",
+      "status": "success",
+      "fileName": "msu-webcam-2026-02-01_22-25-11.jpg",
+      "size": 197270
+    }
+  ]
+}

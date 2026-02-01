@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photo Saver Admin</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    h1 { margin-bottom: 20px; color: #00d9ff; }
+
+    .card {
+      background: #16213e;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid #0f3460;
+    }
+
+    .source-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .source-name {
+      font-size: 1.2em;
+      font-weight: 600;
+      color: #00d9ff;
+    }
+
+    .status {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: 500;
+    }
+    .status.enabled { background: #00c853; color: #000; }
+    .status.disabled { background: #ff5252; color: #fff; }
+
+    .source-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .info-item {
+      background: #0f3460;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .info-label { font-size: 0.8em; color: #888; margin-bottom: 4px; }
+    .info-value { font-size: 0.95em; word-break: break-all; }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9em;
+      transition: opacity 0.2s;
+    }
+    button:hover { opacity: 0.8; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-primary { background: #00d9ff; color: #000; }
+    .btn-success { background: #00c853; color: #000; }
+    .btn-warning { background: #ffc107; color: #000; }
+    .btn-danger { background: #ff5252; color: #fff; }
+    .btn-secondary { background: #666; color: #fff; }
+
+    .history {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #0f3460;
+    }
+    .history-title { font-size: 0.9em; color: #888; margin-bottom: 10px; }
+    .history-list {
+      max-height: 150px;
+      overflow-y: auto;
+    }
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 10px;
+      background: #0f3460;
+      margin-bottom: 4px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .history-item.success { border-left: 3px solid #00c853; }
+    .history-item.error { border-left: 3px solid #ff5252; }
+
+    .add-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .form-group { display: flex; flex-direction: column; }
+    .form-group label { font-size: 0.85em; color: #888; margin-bottom: 6px; }
+    .form-group input {
+      padding: 10px;
+      border: 1px solid #0f3460;
+      border-radius: 6px;
+      background: #0f3460;
+      color: #fff;
+      font-size: 0.95em;
+    }
+    .form-group input:focus { outline: none; border-color: #00d9ff; }
+
+    .edit-form { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #0f3460; }
+    .edit-form.active { display: block; }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal.active { display: flex; }
+    .modal-content {
+      background: #16213e;
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 500px;
+      width: 90%;
+    }
+    .modal-title { margin-bottom: 20px; color: #00d9ff; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Photo Saver Admin</h1>
+
+    <div class="card">
+      <h3 style="margin-bottom: 15px;">Добавить источник</h3>
+      <form id="addForm" class="add-form">
+        <div class="form-group">
+          <label>Название</label>
+          <input type="text" name="name" required placeholder="Моя камера">
+        </div>
+        <div class="form-group">
+          <label>URL изображения</label>
+          <input type="url" name="url" required placeholder="http://example.com/cam.jpg">
+        </div>
+        <div class="form-group">
+          <label>Папка сохранения</label>
+          <input type="text" name="outputDir" placeholder="./images/my-cam">
+        </div>
+        <div class="form-group">
+          <label>Интервал (минуты)</label>
+          <input type="number" name="intervalMinutes" value="60" min="1">
+        </div>
+        <div class="form-group" style="justify-content: flex-end;">
+          <button type="submit" class="btn-primary">Добавить</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="sourcesList"></div>
+  </div>
+
+  <div id="deleteModal" class="modal">
+    <div class="modal-content">
+      <h3 class="modal-title">Удалить источник?</h3>
+      <p>Это действие нельзя отменить. Сохраненные изображения не будут удалены.</p>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeDeleteModal()">Отмена</button>
+        <button class="btn-danger" id="confirmDelete">Удалить</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let sources = [];
+    let deleteSourceId = null;
+
+    async function loadSources() {
+      try {
+        const res = await fetch('/api/sources');
+        sources = await res.json();
+        renderSources();
+      } catch (err) {
+        console.error('Failed to load sources:', err);
+      }
+    }
+
+    function formatDate(isoString) {
+      if (!isoString) return '-';
+      return new Date(isoString).toLocaleString('ru-RU');
+    }
+
+    function formatSize(bytes) {
+      if (!bytes) return '-';
+      return (bytes / 1024).toFixed(1) + ' KB';
+    }
+
+    function renderSources() {
+      const container = document.getElementById('sourcesList');
+
+      if (sources.length === 0) {
+        container.innerHTML = '<div class="card"><p style="color: #888;">Нет добавленных источников</p></div>';
+        return;
+      }
+
+      container.innerHTML = sources.map(source => `
+        <div class="card" data-id="${source.id}">
+          <div class="source-header">
+            <span class="source-name">${source.name}</span>
+            <span class="status ${source.enabled ? 'enabled' : 'disabled'}">
+              ${source.enabled ? 'Активен' : 'Отключен'}
+            </span>
+          </div>
+
+          <div class="source-info">
+            <div class="info-item">
+              <div class="info-label">URL</div>
+              <div class="info-value">${source.url}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Папка</div>
+              <div class="info-value">${source.outputDir}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Интервал</div>
+              <div class="info-value">${source.intervalMinutes} мин</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Следующий запуск</div>
+              <div class="info-value">${formatDate(source.nextRun)}</div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn-primary" onclick="runNow('${source.id}')">Запустить сейчас</button>
+            <button class="${source.enabled ? 'btn-warning' : 'btn-success'}" onclick="toggleSource('${source.id}')">
+              ${source.enabled ? 'Отключить' : 'Включить'}
+            </button>
+            <button class="btn-secondary" onclick="toggleEdit('${source.id}')">Редактировать</button>
+            <button class="btn-danger" onclick="showDeleteModal('${source.id}')">Удалить</button>
+          </div>
+
+          <div class="edit-form" id="edit-${source.id}">
+            <form onsubmit="updateSource(event, '${source.id}')">
+              <div class="add-form">
+                <div class="form-group">
+                  <label>Название</label>
+                  <input type="text" name="name" value="${source.name}" required>
+                </div>
+                <div class="form-group">
+                  <label>URL</label>
+                  <input type="url" name="url" value="${source.url}" required>
+                </div>
+                <div class="form-group">
+                  <label>Папка</label>
+                  <input type="text" name="outputDir" value="${source.outputDir}">
+                </div>
+                <div class="form-group">
+                  <label>Интервал (мин)</label>
+                  <input type="number" name="intervalMinutes" value="${source.intervalMinutes}" min="1">
+                </div>
+                <div class="form-group" style="justify-content: flex-end;">
+                  <button type="submit" class="btn-primary">Сохранить</button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          ${source.history && source.history.length > 0 ? `
+            <div class="history">
+              <div class="history-title">История (последние ${source.history.length})</div>
+              <div class="history-list">
+                ${source.history.map(h => `
+                  <div class="history-item ${h.status}">
+                    <span>${formatDate(h.timestamp)} ${h.manual ? '(вручную)' : ''}</span>
+                    <span>${h.status === 'success' ? formatSize(h.size) : h.error || ''}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    async function runNow(id) {
+      try {
+        const res = await fetch(`/api/sources/${id}/run`, { method: 'POST' });
+        const data = await res.json();
+        if (data.error) {
+          alert('Ошибка: ' + data.error);
+        } else {
+          alert('Изображение сохранено: ' + data.fileName);
+        }
+        loadSources();
+      } catch (err) {
+        alert('Ошибка: ' + err.message);
+      }
+    }
+
+    async function toggleSource(id) {
+      await fetch(`/api/sources/${id}/toggle`, { method: 'POST' });
+      loadSources();
+    }
+
+    function toggleEdit(id) {
+      const form = document.getElementById(`edit-${id}`);
+      form.classList.toggle('active');
+    }
+
+    async function updateSource(e, id) {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        name: form.name.value,
+        url: form.url.value,
+        outputDir: form.outputDir.value,
+        intervalMinutes: parseInt(form.intervalMinutes.value)
+      };
+
+      await fetch(`/api/sources/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      loadSources();
+    }
+
+    function showDeleteModal(id) {
+      deleteSourceId = id;
+      document.getElementById('deleteModal').classList.add('active');
+    }
+
+    function closeDeleteModal() {
+      deleteSourceId = null;
+      document.getElementById('deleteModal').classList.remove('active');
+    }
+
+    document.getElementById('confirmDelete').onclick = async () => {
+      if (deleteSourceId) {
+        await fetch(`/api/sources/${deleteSourceId}`, { method: 'DELETE' });
+        closeDeleteModal();
+        loadSources();
+      }
+    };
+
+    document.getElementById('addForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        name: form.name.value,
+        url: form.url.value,
+        outputDir: form.outputDir.value || undefined,
+        intervalMinutes: parseInt(form.intervalMinutes.value)
+      };
+
+      const res = await fetch('/api/sources', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      if (res.ok) {
+        form.reset();
+        form.intervalMinutes.value = 60;
+        loadSources();
+      } else {
+        const err = await res.json();
+        alert('Ошибка: ' + err.error);
+      }
+    };
+
+    // Auto-refresh every 30 seconds
+    setInterval(loadSources, 30000);
+    loadSources();
+  </script>
+</body>
+</html>

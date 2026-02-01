@@ -1,0 +1,16 @@
+FROM oven/bun:1
+
+WORKDIR /app
+
+COPY package.json ./
+RUN bun install --production
+
+COPY admin ./admin
+COPY config ./config
+
+# Создаём директории для данных
+RUN mkdir -p /app/logs /app/data /app/images /app/webcam_archive
+
+EXPOSE 3000
+
+CMD ["bun", "admin/server.js"]

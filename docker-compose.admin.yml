@@ -1,0 +1,15 @@
+services:
+  admin:
+    build:
+      context: .
+      dockerfile: Dockerfile.admin
+    container_name: photo-saver-admin
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./config:/app/config
+      - ./images:/app/images
+      - ./webcam_archive:/app/webcam_archive
+    environment:
+      - ADMIN_PORT=3000
+    restart: unless-stopped

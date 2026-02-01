@@ -22,8 +22,8 @@ services:
     image: nginx:alpine
     container_name: photo-saver-nginx
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:80"
+      # - "443:443"  # раскомментируй для HTTPS
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       # Для SSL (раскомментируй):
